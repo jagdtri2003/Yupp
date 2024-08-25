@@ -14,43 +14,48 @@ import { timeAgo } from "../lib/timeAgo";
 import { likePost,unlikePost,getLikesByUser,subscribeToLikeChanges } from "../lib/appwrite";
 import { useGlobalContext } from "../context/GlobalProvider";
 
-const UserPost = ({ username, userImage, post, date, caption, likedBy, id }) => {
+const UserPost = ({ username, userImage, post, date, caption, id }) => {
   const { user } = useGlobalContext();
   const [liked, setLiked] = useState(false);
   const [lastTap, setLastTap] = useState(null);
   const [bookmarked, setBookmarked] = useState(false);
-  const [hasRendered, setHasRendered] = useState(false); // Flag for initial render
-  const [likeCount, setLikeCount] = useState(likedBy.length);
+  const [likesCount, setLikesCount] = useState(0);
 
   const toTitle = (str) => {
     return str.slice(0, 1).toUpperCase() + str.slice(1);
   };
 
-  useEffect(() => {    
-    setLiked(likedBy.some(liker => liker.accountId === user.accountId));
-    setHasRendered(true); // Mark the initial render as completed
-  }, [likedBy, user.accountId]);
 
   useEffect(() => {
-    // Only perform the API call after the initial render
-    if (hasRendered) {
-      if (liked) {
-        likePost(id, user.$id);
-      } else {
-        unlikePost(id, user.$id);
-      }
-    }
-  }, [liked, id, user.accountId, hasRendered]);
+    getLikesByUser(user.$id, id, setLikesCount, setLiked);
 
-  const handleDoubleTap = () => {
+    const unsubscribe = subscribeToLikeChanges(id, user.$id, setLikesCount, setLiked);
+
+    return () => unsubscribe();
+  }, [user.$id, id]);
+
+  const handleDoubleTap = async () => {
     const now = Date.now();
     if (lastTap && now - lastTap < 400) {
-      setLiked(true);
-      if(!likedBy.some(liker => liker.accountId === user.accountId)){
-        setLikeCount(likeCount + 1); 
+      if (!liked) {
+        setLiked(true);
+        await likePost(id, user.$id);
+        setLikesCount((count) => count + 1);
       }
     } else {
       setLastTap(now);
+    }
+  };
+
+  const handleLike = async () => {
+    if (!liked) {
+      setLiked(true);
+      setLikesCount((count) => count + 1);
+      await likePost(id, user.$id);
+    } else {
+      setLiked(false);
+      setLikesCount((count) => count - 1);
+      await unlikePost(id, user.$id);
     }
   };
 
@@ -90,16 +95,16 @@ const UserPost = ({ username, userImage, post, date, caption, likedBy, id }) => 
         <View className="flex flex-row space-x-6">
           <TouchableOpacity
             className="flex flex-row items-center space-x-2"
-            onPress={() => setLiked(!liked)}
+            onPress={() => {handleLike()}}
           >
             <FontAwesome
               name={liked ? "heart" : "heart-o"}
               size={24}
               color={liked ? "red" : "white"}
             />
-            {likedBy && likedBy.length > 0 && (
-              <Text className="text-white font-pregular">{likedBy.length}</Text>
-            )}
+            { likesCount > 0 &&
+              <Text className="text-white font-pregular">{likesCount}</Text>
+            }
           </TouchableOpacity>
           <TouchableOpacity>
             <Feather name="message-circle" size={24} color="white" />
