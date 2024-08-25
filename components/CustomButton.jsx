@@ -1,4 +1,5 @@
 import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import {FontAwesome5} from "react-native-vector-icons";
 
 const CustomButton = ({
   title,
@@ -6,6 +7,7 @@ const CustomButton = ({
   containerStyles,
   textStyles,
   isLoading,
+  icon,
 }) => {
   return (
     <TouchableOpacity
@@ -17,7 +19,7 @@ const CustomButton = ({
       disabled={isLoading}
     >
       <Text className={`text-primary font-pbold text-lg ${textStyles}`}>
-        {title}
+        {icon && <FontAwesome5 name={icon} size={20} color="black" />}  {title}
       </Text>
 
       {isLoading && (

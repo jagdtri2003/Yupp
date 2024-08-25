@@ -1,6 +1,6 @@
-import { View, ActivityIndicator, Dimensions, Platform } from "react-native";
+import { View, ActivityIndicator, Dimensions, Platform,Text } from "react-native";
 
-const Loader = ({ isLoading }) => {
+const Loader = ({ isLoading, title }) => {
   const osName = Platform.OS;
   const screenHeight = Dimensions.get("screen").height;
 
@@ -13,7 +13,7 @@ const Loader = ({ isLoading }) => {
         height: screenHeight,
       }}
     >
-      <ActivityIndicator
+      {title && <Text className="text-white font-pregular text-lg">{title}</Text>}<ActivityIndicator
         animating={isLoading}
         color="#fff"
         size={osName === "ios" ? "large" : 50}

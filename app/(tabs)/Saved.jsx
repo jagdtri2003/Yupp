@@ -1,10 +1,13 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import BackTab from '../../components/BackTab'
 
 const Saved = () => {
   return (
-    <View>
-      <Text>Saved</Text>
+    <View className="h-full w-full bg-[#111111]">
+      <BackTab tabName="Saved Post" />
+
+      
     </View>
   )
 }

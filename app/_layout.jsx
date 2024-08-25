@@ -41,12 +41,13 @@ export default function RootLayout() {
   return (
     <>
       <GlobalProvider>
-      <StatusBar translucent={false} backgroundColor="#FF8E01" />
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      </Stack>
+        <StatusBar translucent={false} backgroundColor="#FF8E01" />
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="Profile" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        </Stack>
       </GlobalProvider>
     </>
   );

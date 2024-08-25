@@ -5,15 +5,31 @@ import {  router } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
 import UserPost from "../../components/UserPost";
 import { useFocusEffect } from '@react-navigation/native';
+import {getAllPosts} from '../../lib/appwrite';
+import Loader from "../../components/Loader";
 
 const Home = () => {
-  const [refreshing, setRefreshing] = React.useState(false);
-  const {user} = useGlobalContext();
   useEffect(()=>{
     if(!user){
       router.replace('/sign-in');
     }
-  },[user])
+  });
+  const [refreshing, setRefreshing] = React.useState(false);
+  const {user} = useGlobalContext();
+  const [fecthing, setFecthing] = React.useState(true);
+  const [posts, setPosts] = React.useState([]);
+  useEffect(()=>{
+    const getPosts = async()=>{
+      const post = await getAllPosts();
+      if(post){
+        setPosts(post.reverse());
+        setFecthing(false);
+      }
+
+    }
+  
+    getPosts();
+  },[refreshing])
   const handleRefresh = () =>{
     setRefreshing(true);
     setTimeout(()=>{
@@ -46,12 +62,13 @@ const Home = () => {
 
   return (
     <>
+      <Loader isLoading={fecthing}></Loader>
       <ScrollView showsVerticalScrollIndicator={false} className="h-full bg-[#111111]" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
         <View className="h-[24vh] bg-[#232020] rounded-b-3xl mb-8">
           <View className="flex flex-row justify-between items-center">
             <View>
               <Text className="text-white font-pregular text-sm m-3 mb-2">{`${new Date().toLocaleString('en-US', { weekday: 'long' }).toUpperCase()} , ${new Date().getDate()} ${new Date().toLocaleString('en-US', { month: 'short' }).toUpperCase()}`}</Text>
-              <Text className="text-white font-pbold text-3xl ml-3">{user.username.split(" ")[0].slice(0,1).toUpperCase()+user.username.split(" ")[0].slice(1)}</Text>
+              {user && <Text className="text-white font-pbold text-3xl ml-3">{user.username.split(" ")[0].slice(0,1).toUpperCase()+user.username.split(" ")[0].slice(1)}</Text>}
             </View>
             <View>
               <View >
@@ -80,9 +97,18 @@ const Home = () => {
               ))}
           </ScrollView>
         </View>
-        <UserPost username={"Shubham"} post={"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_640.jpg"} userImage={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREoRGyXmHy_6aIgXYqWHdOT3KjfmnuSyxypw&s"}/>
-        <UserPost username={"Shubham"} post={"https://images.pexels.com/photos/56866/garden-rose-red-pink-56866.jpeg"} userImage={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREoRGyXmHy_6aIgXYqWHdOT3KjfmnuSyxypw&s"}/>
-        <UserPost username={"Shubham"} post={"https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg"} userImage={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREoRGyXmHy_6aIgXYqWHdOT3KjfmnuSyxypw&s"}/>
+        {posts.map((post) => (
+          <UserPost
+            key={post.$id} 
+            username={post.User.username}
+            post={post.ImageUrl}
+            userImage={post.User.avatar}
+            date={post.Date}
+            caption={post.Caption}
+            likedBy={post.LikedBy}
+            id={post.$id}
+          />
+        ))}
       </ScrollView>
     </>
   )
