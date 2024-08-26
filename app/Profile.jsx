@@ -5,8 +5,8 @@ import {
   ImageBackground,
   ScrollView,
 } from "react-native";
-import React from "react";
-import { signOut,updateUser } from "../lib/appwrite";
+import React, { useEffect } from "react";
+import { signOut,updateUser,getAllPosts} from "../lib/appwrite";
 import { router } from "expo-router";
 import { useGlobalContext } from "../context/GlobalProvider";
 import CustomButton from "../components/CustomButton";
@@ -16,9 +16,10 @@ import Loader from "../components/Loader";
 import * as ImagePicker from 'expo-image-picker';
 
 const Profile = () => {
-  const { user, setUser, setIsLogged } = useGlobalContext();
+  const { user, setUser, setIsLogged,userPosts } = useGlobalContext();
   const [loading,setLoading] = React.useState(false);
   const [image,setImage] = React.useState(null);
+  const [posts,setPosts] = React.useState([]);
 
   const handleSignout = () =>{
     setLoading(true);
@@ -33,6 +34,9 @@ const Profile = () => {
       setLoading(false);
     },1500);
   }
+  useEffect(()=>{
+    setPosts(userPosts.sort((a,b)=> new Date(b.Date) - new Date(a.Date)));
+  },[])
 
   const handleUpdate = async(final) =>{
     if (final){
@@ -95,7 +99,7 @@ const Profile = () => {
             Latest Post
           </Text>
           <View className="flex-1 w-full">
-          {user.userPost.reverse().map((post) => (
+          {posts.map((post) => (
             <UserPost
               key={post.$id}
               username={user.username}
@@ -103,7 +107,6 @@ const Profile = () => {
               userImage={user.avatar}
               date={post.Date}
               caption={post.Caption}
-              likedBy={post.LikedBy}
               id={post.$id}
             />
           ))}

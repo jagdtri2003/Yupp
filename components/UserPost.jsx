@@ -30,17 +30,16 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
     getLikesByUser(user.$id, id, setLikesCount, setLiked);
 
     const unsubscribe = subscribeToLikeChanges(id, user.$id, setLikesCount, setLiked);
-
     return () => unsubscribe();
-  }, [user.$id, id]);
+  }, [user.$id,id]);
 
   const handleDoubleTap = async () => {
     const now = Date.now();
     if (lastTap && now - lastTap < 400) {
       if (!liked) {
         setLiked(true);
-        await likePost(id, user.$id);
         setLikesCount((count) => count + 1);
+        await likePost(id, user.$id);
       }
     } else {
       setLastTap(now);

@@ -9,7 +9,7 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import { router } from "expo-router";
 
 const Create = () => {
-  const {user} = useGlobalContext()
+  const {user,setPosts} = useGlobalContext()
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,6 +37,7 @@ const Create = () => {
     const form = {image,caption,userId}
     try{
       const newPost = await createPost(form)
+      setPosts(prev => [newPost, ...prev]);
       setImage(null);
       setCaption('');
       router.replace('/Home');

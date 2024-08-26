@@ -5,7 +5,7 @@ import {  router } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
 import UserPost from "../../components/UserPost";
 import { useFocusEffect } from '@react-navigation/native';
-import {getAllPosts} from '../../lib/appwrite';
+import {subscribeToPosts} from '../../lib/appwrite';
 import Loader from "../../components/Loader";
 
 const Home = () => {
@@ -15,21 +15,21 @@ const Home = () => {
     }
   });
   const [refreshing, setRefreshing] = React.useState(false);
-  const {user} = useGlobalContext();
-  const [fecthing, setFecthing] = React.useState(true);
-  const [posts, setPosts] = React.useState([]);
+  const {user,posts} = useGlobalContext();
+  const [fetching, setFetching] = React.useState(true);
+  const [Posts, setPosts] = React.useState([]);
   useEffect(()=>{
-    const getPosts = async()=>{
-      const post = await getAllPosts();
-      if(post){
-        setPosts(post.reverse());
-        setFecthing(false);
-      }
-
-    }
-  
-    getPosts();
-  },[refreshing])
+    const fetchPosts = () => {
+        setPosts(posts.sort((a,b)=> new Date(b.Date) - new Date(a.Date)));
+        setFetching(false);
+    };
+    console.log("refresh!!")
+    fetchPosts();
+    // Subscribe to post changes
+    const unsubscribe = subscribeToPosts(setPosts);
+    // Cleanup subscription on component unmount
+    return () => unsubscribe();
+  },[refreshing,posts])
   const handleRefresh = () =>{
     setRefreshing(true);
     setTimeout(()=>{
@@ -62,7 +62,7 @@ const Home = () => {
 
   return (
     <>
-      <Loader isLoading={fecthing}></Loader>
+      <Loader isLoading={fetching}></Loader>
       <ScrollView showsVerticalScrollIndicator={false} className="h-full bg-[#111111]" refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
         <View className="h-[24vh] bg-[#232020] rounded-b-3xl mb-8">
           <View className="flex flex-row justify-between items-center">
@@ -73,7 +73,7 @@ const Home = () => {
             <View>
               <View >
                 <TouchableOpacity onPress={()=>{router.push("/Profile")}}>
-                <Image source={{uri: "https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp"}} className="w-16 h-16 rounded-full mx-4" />
+                <Image source={{uri: user.avatar}} className="w-16 h-16 rounded-full mx-4" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -97,7 +97,7 @@ const Home = () => {
               ))}
           </ScrollView>
         </View>
-        {posts.map((post) => (
+        {Posts.map((post) => (
           <UserPost
             key={post.$id} 
             username={post.User.username}
