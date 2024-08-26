@@ -25,10 +25,6 @@ const Home = () => {
     };
     console.log("refresh!!")
     fetchPosts();
-    // Subscribe to post changes
-    const unsubscribe = subscribeToPosts(setPosts);
-    // Cleanup subscription on component unmount
-    return () => unsubscribe();
   },[refreshing,posts])
   const handleRefresh = () =>{
     setRefreshing(true);

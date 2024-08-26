@@ -16,8 +16,8 @@ const GlobalProvider = ({ children }) => {
     getCurrentUser()
       .then((res) => {
         if (res) {
-          setIsLogged(true);
           setUser(res);
+          setIsLogged(true);
           getAllPosts().then((pst) => {
             setPosts(pst);
             setUserPosts(pst.filter((post) => post.User.$id === user.$id));
