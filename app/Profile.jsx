@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useEffect } from "react";
-import { signOut,updateUser,getAllPosts} from "../lib/appwrite";
+import { signOut,updateUser} from "../lib/appwrite";
 import { router } from "expo-router";
 import { useGlobalContext } from "../context/GlobalProvider";
 import CustomButton from "../components/CustomButton";
@@ -16,10 +16,10 @@ import Loader from "../components/Loader";
 import * as ImagePicker from 'expo-image-picker';
 
 const Profile = () => {
-  const { user, setUser, setIsLogged,userPosts } = useGlobalContext();
+  const { user, setUser, setIsLogged,posts } = useGlobalContext();
   const [loading,setLoading] = React.useState(false);
   const [image,setImage] = React.useState(null);
-  const [posts,setPosts] = React.useState([]);
+  const [Posts,setPosts] = React.useState([]);
 
   const handleSignout = () =>{
     setLoading(true);
@@ -35,7 +35,7 @@ const Profile = () => {
     },1500);
   }
   useEffect(()=>{
-    setPosts(userPosts.sort((a,b)=> new Date(b.Date) - new Date(a.Date)));
+    setPosts(posts.filter((post)=> post.User.$id === user.$id).sort((a,b)=> new Date(b.Date) - new Date(a.Date)));
   },[])
 
   const handleUpdate = async(final) =>{
@@ -99,7 +99,7 @@ const Profile = () => {
             Latest Post
           </Text>
           <View className="flex-1 w-full">
-          {posts.map((post) => (
+          {Posts.map((post) => (
             <UserPost
               key={post.$id}
               username={user.username}

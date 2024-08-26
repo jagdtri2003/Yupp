@@ -10,7 +10,6 @@ const GlobalProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
-  const [userPosts, setUserPosts] = useState([]);
 
   useEffect(() => {
     getCurrentUser()
@@ -20,7 +19,6 @@ const GlobalProvider = ({ children }) => {
           setIsLogged(true);
           getAllPosts().then((pst) => {
             setPosts(pst);
-            setUserPosts(pst.filter((post) => post.User.$id === user.$id));
           })
         } else {
           setIsLogged(false);
@@ -45,8 +43,6 @@ const GlobalProvider = ({ children }) => {
         loading,
         posts,
         setPosts,
-        userPosts,
-        setUserPosts,
       }}
     >
       {children}
