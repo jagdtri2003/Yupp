@@ -8,11 +8,12 @@ import {
   ToastAndroid
 } from "react-native";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useRef } from "react";
 import playSound from "../components/PlayAudio";
 import { timeAgo } from "../lib/timeAgo";
 import { likePost,unlikePost,getLikesByUser,subscribeToLikeChanges } from "../lib/appwrite";
 import { useGlobalContext } from "../context/GlobalProvider";
+import ActionSheet from 'react-native-actions-sheet';
 
 const UserPost = ({ username, userImage, post, date, caption, id }) => {
   const { user } = useGlobalContext();
@@ -20,12 +21,19 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
   const [lastTap, setLastTap] = useState(null);
   const [bookmarked, setBookmarked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const actionSheetRef = useRef(null);
+
 
   const toTitle = (str) => {
     return str.slice(0, 1).toUpperCase() + str.slice(1);
   };
 
-
+  // Show ActionSheet when the three dots are clicked
+  const showActionSheet = () => {
+    if (actionSheetRef.current) {
+      actionSheetRef.current?.show();
+    }
+  };
   useEffect(() => {
     getLikesByUser(user.$id, id, setLikesCount, setLiked);
 
@@ -83,8 +91,8 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity>
-                <Feather name="more-vertical" size={24} color="white" />
+              <TouchableOpacity onPress={showActionSheet}>
+                <Feather name="more-vertical"  size={24} color="white" />
               </TouchableOpacity>
             </View>
           </ImageBackground>
@@ -132,7 +140,22 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
           </Text>
         )}
       </View>
+      <ActionSheet gestureEnabled={true} indicatorStyle={{width: 100,backgroundColor:"#232323"}} id="example-sheet" ref={actionSheetRef}>
+        <View style={{ padding: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Posted By {username} {timeAgo(date)}</Text>
+          {userImage === user.avatar && (<TouchableOpacity style={{ padding: 10 }}>
+            <Text>Delete Post</Text>
+          </TouchableOpacity>)}
+          <TouchableOpacity style={{ padding: 10 }}>
+            <Text>Edit Post</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ padding: 10 }}>
+            <Text>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </ActionSheet>
     </View>
+
   );
 };
 

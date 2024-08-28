@@ -5,7 +5,6 @@ import {  router } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
 import UserPost from "../../components/UserPost";
 import { useFocusEffect } from '@react-navigation/native';
-import {subscribeToPosts} from '../../lib/appwrite';
 import Loader from "../../components/Loader";
 
 const Home = () => {
