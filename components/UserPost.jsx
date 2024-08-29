@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback as Touchable,
   ToastAndroid
 } from "react-native";
-import { Feather, FontAwesome } from "@expo/vector-icons";
+import { Feather, FontAwesome,MaterialIcons } from "@expo/vector-icons";
 import React, { useState,useEffect,useRef } from "react";
 import playSound from "../components/PlayAudio";
 import { timeAgo } from "../lib/timeAgo";
@@ -141,17 +141,66 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
         )}
       </View>
       <ActionSheet gestureEnabled={true} indicatorStyle={{width: 100,backgroundColor:"#232323"}} id="example-sheet" ref={actionSheetRef}>
-        <View style={{ padding: 20 }}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Posted By {username} {timeAgo(date)}</Text>
-          {userImage === user.avatar && (<TouchableOpacity style={{ padding: 10 }}>
-            <Text>Delete Post</Text>
-          </TouchableOpacity>)}
-          <TouchableOpacity style={{ padding: 10 }}>
-            <Text>Edit Post</Text>
+        <View className="w-full px-6 flex flex-row items-center justify-between py-4">
+          <TouchableOpacity
+            className="flex flex-row items-center space-x-2"
+            onPress={handleLike}
+          >
+            <FontAwesome
+              name={liked ? "heart" : "heart-o"}
+              size={26}
+              color={liked ? "red" : "black"}
+            />
+            <Text
+              className="text-black text-[17px] font-pmedium"
+              onPress={handleLike}
+            >
+              {liked ? "Unlike" : "Like"}
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 10 }}>
-            <Text>Cancel</Text>
+          <TouchableOpacity
+            className="flex flex-row items-center space-x-2"
+            onPress={() => setBookmarked(!bookmarked)}
+          >
+            <FontAwesome  name={bookmarked ? "bookmark" : "bookmark-o"} size={26} color="black" />
+            <Text
+              className="text-black text-[17px] font-pmedium"
+              onPress={() => actionSheetRef.current?.show()}
+            >
+             {bookmarked ? "Remove" : "Save"}
+            </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            className="flex flex-row items-center space-x-2"
+            onPress={() => actionSheetRef.current?.show()}
+          >
+            <Feather name="share" size={26} color="black" />
+            <Text
+              className="text-black text-[17px] font-pmedium"
+              onPress={() => actionSheetRef.current?.show()}
+            >
+              Share
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View className="h-[1px] w-full bg-gray-300" />
+        {user.avatar === userImage &&(<View className="w-full px-6 pt-4">
+          <View className="flex flex-row items-center space-x-2">
+            <FontAwesome name="trash-o" size={27} color={"red"}/>
+            <Text className="text-red-500 text-[17px] font-pmedium pt-2">Delete this post </Text>
+          </View>
+        </View>)}
+        <View className="w-full px-6 pt-4">
+          <View className="flex flex-row items-center space-x-2">
+            <FontAwesome name="user-o" size={27} color={"black"}/>
+            <Text className="text-black-500 text-[17px] font-pmedium pt-2">User's Profile </Text>
+          </View>
+        </View>
+        <View className="w-full px-6 py-4">
+          <View className="flex flex-row items-center space-x-2">
+            <MaterialIcons name="report-problem" size={27} color={"red"}/>
+            <Text className="text-red-500 text-[17px] font-pmedium pt-2">Report Post </Text>
+          </View>
         </View>
       </ActionSheet>
     </View>

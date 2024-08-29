@@ -20,7 +20,9 @@ const Home = () => {
   useEffect(()=>{
     const fetchPosts = () => {
         setPosts(posts.sort((a,b)=> new Date(b.Date) - new Date(a.Date)));
-        setFetching(false);
+        if(posts.length > 0){
+          setFetching(false);
+        }
     };
     console.log("refresh!!")
     fetchPosts();
