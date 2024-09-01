@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   TouchableWithoutFeedback as Touchable,
   ToastAndroid,
@@ -18,6 +17,7 @@ import {
 } from "../lib/appwrite";
 import { useGlobalContext } from "../context/GlobalProvider";
 import ActionSheet from "react-native-actions-sheet";
+import { Image } from "expo-image";
 
 const UserPost = ({ username, userImage, post, date, caption, id }) => {
   const { user } = useGlobalContext();
@@ -98,7 +98,11 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
           <Image
             source={{ uri: post }}
             className="w-full h-full"
-            resizeMode="cover"
+            cachePolicy="memory-disk"
+            transition={2000}
+            transitionDuration={1000}
+            transitionType="fade"
+            contentFit="cover"
           ></Image>
         </View>
       </Touchable>
