@@ -18,6 +18,7 @@ import {
 import { useGlobalContext } from "../context/GlobalProvider";
 import ActionSheet from "react-native-actions-sheet";
 import { Image } from "expo-image";
+import loadingImg from "../assets/images/loadingImg.gif"
 
 const UserPost = ({ username, userImage, post, date, caption, id }) => {
   const { user } = useGlobalContext();
@@ -103,6 +104,7 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
             transitionDuration={1000}
             transitionType="fade"
             contentFit="cover"
+            placeholder={loadingImg}
           ></Image>
         </View>
       </Touchable>

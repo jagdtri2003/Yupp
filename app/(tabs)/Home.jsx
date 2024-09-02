@@ -6,6 +6,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import UserPost from "../../components/UserPost";
 import { useFocusEffect } from '@react-navigation/native';
 import Loader from "../../components/Loader";
+import {getAllPosts} from "../../lib/appwrite"
 
 const Home = () => {
   useEffect(()=>{
@@ -27,11 +28,11 @@ const Home = () => {
     console.log("refresh!!")
     fetchPosts();
   },[refreshing,posts])
-  const handleRefresh = () =>{
+  const handleRefresh = async() =>{
     setRefreshing(true);
-    setTimeout(()=>{
-      setRefreshing(false);
-    },3000)
+    const newPosts = await getAllPosts();
+    setPosts(newPosts.sort((a,b)=> new Date(b.Date) - new Date(a.Date)));
+    setRefreshing(false);
   }
 
   useFocusEffect(
