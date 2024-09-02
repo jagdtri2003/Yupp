@@ -19,8 +19,8 @@ const Home = () => {
   const [Posts, setPosts] = React.useState([]);
   useEffect(()=>{
     const fetchPosts = () => {
-        setPosts(posts.sort((a,b)=> new Date(b.Date) - new Date(a.Date)));
-        if(posts.length > 0){
+      if(posts.length > 0){
+          setPosts(posts.sort((a,b)=> new Date(b.Date) - new Date(a.Date)));
           setFetching(false);
         }
     };
