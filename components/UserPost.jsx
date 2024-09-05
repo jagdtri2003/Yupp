@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback as Touchable,
   ToastAndroid,
+  Alert
 } from "react-native";
 import { Feather, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useEffect, useRef } from "react";
@@ -14,11 +15,13 @@ import {
   unlikePost,
   getLikesByUser,
   subscribeToLikeChanges,
+  deletePost,
 } from "../lib/appwrite";
 import { useGlobalContext } from "../context/GlobalProvider";
 import ActionSheet from "react-native-actions-sheet";
 import { Image } from "expo-image";
 import loadingImg from "../assets/images/loadingImg.gif"
+import * as FileSystem from 'expo-file-system';
 
 const UserPost = ({ username, userImage, post, date, caption, id }) => {
   const { user } = useGlobalContext();
@@ -27,6 +30,7 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
   const [bookmarked, setBookmarked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const actionSheetRef = useRef(null);
+  const path = FileSystem.documentDirectory + 'posts.txt';
 
   const toTitle = (str) => {
     return str.slice(0, 1).toUpperCase() + str.slice(1);
@@ -62,6 +66,32 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
       setLastTap(now);
     }
   };
+
+  const handleDelete = ()=>{
+    return (
+      Alert.alert(
+        "Delete Post",
+        "Are you sure you want to delete this post?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            onPress: async() => {
+              console.log(deletePost(id));
+              // const updatedPosts = posts.filter((post) => post.id !== id);
+              // await FileSystem.writeAsStringAsync()
+            },
+            style: "destructive",
+          },
+        ],
+        { cancelable: false }
+      )
+    )
+  }
 
   const handleLike = async () => {
     if (!liked) {
@@ -206,6 +236,7 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
         </View>
         <View className="h-[1px] w-full bg-gray-300" />
         {user.avatar === userImage && (
+          <TouchableOpacity onPress={handleDelete}>
           <View className="w-full px-6 pt-4">
             <View className="flex flex-row items-center space-x-2">
               <FontAwesome name="trash-o" size={27} color={"red"} />
@@ -214,6 +245,7 @@ const UserPost = ({ username, userImage, post, date, caption, id }) => {
               </Text>
             </View>
           </View>
+          </TouchableOpacity>
         )}
         <View className="w-full px-6 pt-4">
           <View className="flex flex-row items-center space-x-2">
